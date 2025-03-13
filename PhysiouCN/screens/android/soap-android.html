@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - SOAP病例查看</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* Android特定样式 */
+    .material-card {
+      background-color: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .material-button {
+      background-color: var(--android-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .material-button:hover {
+      background-color: var(--android-primary-dark);
+    }
+    
+    .material-button-secondary {
+      background-color: transparent;
+      color: var(--android-primary);
+      border: 1px solid var(--android-primary);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .material-button-secondary:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    .ripple {
+      position: absolute;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+    
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    
+    /* SOAP病例查看页面特定样式 */
+    .soap-section {
+      margin-bottom: 16px;
+    }
+    
+    .soap-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .soap-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .soap-icon-s {
+      background-color: #2196F3;
+    }
+    
+    .soap-icon-o {
+      background-color: #FF9800;
+    }
+    
+    .soap-icon-a {
+      background-color: #F44336;
+    }
+    
+    .soap-icon-p {
+      background-color: #4CAF50;
+    }
+    
+    .soap-content {
+      background-color: #F5F5F5;
+      border-radius: 4px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .soap-item {
+      margin-bottom: 16px;
+    }
+    
+    .soap-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .soap-item-title {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: var(--android-text-primary);
+    }
+    
+    .soap-item-value {
+      color: var(--android-text-secondary);
+    }
+    
+    .soap-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 13px;
+    }
+    
+    .soap-table th, .soap-table td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #E0E0E0;
+    }
+    
+    .soap-table th {
+      font-weight: 500;
+      color: var(--android-text-primary);
+    }
+    
+    .soap-date {
+      text-align: right;
+      font-size: 12px;
+      color: var(--android-text-secondary);
+      margin-top: 8px;
+    }
+    
+    .soap-doctor {
+      display: flex;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #E0E0E0;
+    }
+    
+    .soap-doctor-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+    
+    .soap-doctor-info {
+      font-size: 14px;
+    }
+    
+    .soap-doctor-name {
+      font-weight: 500;
+      color: var(--android-text-primary);
+    }
+    
+    .soap-doctor-title {
+      color: var(--android-text-secondary);
+      font-size: 12px;
+    }
+    
+    .status-chip {
+      background-color: #E8F5E9;
+      color: #4CAF50;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .status-chip i {
+      font-size: 16px;
+      margin-right: 4px;
+    }
+    
+    .soap-expand-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 8px;
+      background-color: transparent;
+      border: none;
+      color: var(--android-primary);
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+    
+    .soap-expand-button i {
+      margin-left: 4px;
+      transition: transform 0.2s;
+    }
+    
+    .soap-expand-button.expanded i {
+      transform: rotate(180deg);
+    }
+    
+    .fab {
+      position: fixed;
+      bottom: 80px;
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--android-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s;
+    }
+    
+    .fab:hover {
+      background-color: var(--android-primary-dark);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    
+    .fab i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Android 风格SOAP病例查看页面 -->
+  <div class="device device-android">
+    <div class="device-screen">
+      <div class="android-container">
+        <header class="android-header">
+          <div class="android-header-left">
+            <i class="material-icons android-back-button" id="back-button">arrow_back</i>
+          </div>
+          <h1 class="android-title">SOAP病例记录</h1>
+          <div class="android-header-right">
+            <i class="material-icons">more_vert</i>
+          </div>
+        </header>
+        
+        <div class="material-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h2 style="font-size: 18px; font-weight: 500; margin: 0; color: var(--android-text-primary);">腰椎康复治疗</h2>
+              <p style="color: var(--android-text-secondary); margin: 4px 0 0 0; font-size: 14px;">2023年6月12日 下午2:30</p>
+            </div>
+            <div class="status-chip">
+              <i class="material-icons">check_circle</i>
+              已完成
+            </div>
+          </div>
+        </div>
+        
+        <div class="material-card">
+          <div class="soap-section">
+            <div class="soap-header">
+              <div class="soap-icon soap-icon-s">S</div>
+              <h3 style="font-size: 16px; font-weight: 500; margin: 0; color: var(--android-text-primary);">主观资料 (Subjective)</h3>
+            </div>
+            <div class="soap-content">
+              <div class="soap-item">
+                <div class="soap-item-title">主诉</div>
+                <div class="soap-item-value">患者报告腰部疼痛，尤其在久坐后加重。疼痛程度为3/10，较上次就诊时的5/10有所改善。</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">疼痛特征</div>
+                <div class="soap-item-value">钝痛，偶尔向右腿放射。早晨起床时疼痛较轻，晚上较重。</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">加重因素</div>
+                <div class="soap-item-value">久坐、弯腰、提重物</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">缓解因素</div>
+                <div class="soap-item-value">休息、热敷、轻度活动</div>
+              </div>
+            </div>
+            <button class="soap-expand-button" data-section="subjective">
+              查看更多 <i class="material-icons">expand_more</i>
+            </button>
+          </div>
+          
+          <div class="soap-section">
+            <div class="soap-header">
+              <div class="soap-icon soap-icon-o">O</div>
+              <h3 style="font-size: 16px; font-weight: 500; margin: 0; color: var(--android-text-primary);">客观资料 (Objective)</h3>
+            </div>
+            <div class="soap-content">
+              <div class="soap-item">
+                <div class="soap-item-title">关节活动度</div>
+                <table class="soap-table">
+                  <tr>
+                    <th>动作</th>
+                    <th>范围</th>
+                    <th>疼痛</th>
+                  </tr>
+                  <tr>
+                    <td>前屈</td>
+                    <td>0-70°</td>
+                    <td>轻度</td>
+                  </tr>
+                  <tr>
+                    <td>后伸</td>
+                    <td>0-20°</td>
+                    <td>中度</td>
+                  </tr>
+                  <tr>
+                    <td>左侧屈</td>
+                    <td>0-25°</td>
+                    <td>无</td>
+                  </tr>
+                  <tr>
+                    <td>右侧屈</td>
+                    <td>0-20°</td>
+                    <td>轻度</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">肌力测试</div>
+                <div class="soap-item-value">腰椎伸肌: 4/5, 腹肌: 3+/5, 髋屈肌: 4/5</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">特殊测试</div>
+                <div class="soap-item-value">直腿抬高测试: 右侧70°出现症状, 左侧阴性</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">触诊</div>
+                <div class="soap-item-value">L4-L5水平棘突间压痛，右侧腰方肌紧张</div>
+              </div>
+            </div>
+            <button class="soap-expand-button" data-section="objective">
+              查看更多 <i class="material-icons">expand_more</i>
+            </button>
+          </div>
+          
+          <div class="soap-section">
+            <div class="soap-header">
+              <div class="soap-icon soap-icon-a">A</div>
+              <h3 style="font-size: 16px; font-weight: 500; margin: 0; color: var(--android-text-primary);">评估 (Assessment)</h3>
+            </div>
+            <div class="soap-content">
+              <div class="soap-item">
+                <div class="soap-item-title">诊断</div>
+                <div class="soap-item-value">L4-L5椎间盘突出症，伴有右侧坐骨神经痛</div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">功能问题</div>
+                <div class="soap-item-value">
+                  1. 腰椎活动度受限，尤其是前屈和右侧屈<br>
+                  2. 核心肌群力量不足<br>
+                  3. 姿势不良，久坐时腰椎过度前凸
+                </div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">恢复进展</div>
+                <div class="soap-item-value">较上次就诊有明显改善，疼痛程度降低，活动度增加</div>
+              </div>
+            </div>
+            <button class="soap-expand-button" data-section="assessment">
+              查看更多 <i class="material-icons">expand_more</i>
+            </button>
+          </div>
+          
+          <div class="soap-section">
+            <div class="soap-header">
+              <div class="soap-icon soap-icon-p">P</div>
+              <h3 style="font-size: 16px; font-weight: 500; margin: 0; color: var(--android-text-primary);">计划 (Plan)</h3>
+            </div>
+            <div class="soap-content">
+              <div class="soap-item">
+                <div class="soap-item-title">治疗计划</div>
+                <div class="soap-item-value">
+                  1. 腰椎牵引治疗，20分钟<br>
+                  2. 手法治疗，缓解腰方肌紧张<br>
+                  3. 核心肌群稳定性训练<br>
+                  4. 姿势纠正教育
+                </div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">家庭锻炼计划</div>
+                <div class="soap-item-value">
+                  1. 每日进行猫牛式伸展，3组，每组10次<br>
+                  2. 平板支撑训练，3组，每组30秒<br>
+                  3. 骨盆倾斜练习，每天3次，每次10个
+                </div>
+              </div>
+              <div class="soap-item">
+                <div class="soap-item-title">下次复诊</div>
+                <div class="soap-item-value">建议一周后复诊，继续评估恢复情况</div>
+              </div>
+            </div>
+            <button class="soap-expand-button" data-section="plan">
+              查看更多 <i class="material-icons">expand_more</i>
+            </button>
+          </div>
+          
+          <div class="soap-date">记录时间: 2023-06-12 15:45</div>
+          
+          <div class="soap-doctor">
+            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="医生头像" class="soap-doctor-avatar">
+            <div class="soap-doctor-info">
+              <div class="soap-doctor-name">李医生</div>
+              <div class="soap-doctor-title">主治医师 | 脊柱康复专家</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="material-card">
+          <button class="material-button" id="history-button">查看历史SOAP记录</button>
+          <button class="material-button-secondary" id="download-button">下载PDF报告</button>
+        </div>
+        
+        <div class="fab" id="edit-button">
+          <i class="material-icons">edit</i>
+        </div>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="android-bottom-nav">
+          <div class="android-nav-item">
+            <i class="material-icons">home</i>
+            <span>首页</span>
+          </div>
+          <div class="android-nav-item">
+            <i class="material-icons">event</i>
+            <span>预约</span>
+          </div>
+          <div class="android-nav-item active">
+            <i class="material-icons">description</i>
+            <span>记录</span>
+          </div>
+          <div class="android-nav-item">
+            <i class="material-icons">person</i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const navItems = document.querySelectorAll('.android-nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        navItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 添加涟漪效果
+    const buttons = document.querySelectorAll('.material-button, .material-button-secondary, .soap-expand-button, .fab');
+    buttons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        const x = e.clientX - e.target.getBoundingClientRect().left;
+        const y = e.clientY - e.target.getBoundingClientRect().top;
+        
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+    
+    // 展开/收起SOAP内容
+    const expandButtons = document.querySelectorAll('.soap-expand-button');
+    expandButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const section = this.getAttribute('data-section');
+        const content = this.previousElementSibling;
+        
+        if (this.classList.contains('expanded')) {
+          // 收起内容
+          this.classList.remove('expanded');
+          this.innerHTML = '查看更多 <i class="material-icons">expand_more</i>';
+        } else {
+          // 展开内容
+          this.classList.add('expanded');
+          this.innerHTML = '收起 <i class="material-icons">expand_less</i>';
+          
+          // 这里可以添加加载更多内容的逻辑
+          // 例如通过AJAX请求获取完整的SOAP记录
+        }
+      });
+    });
+    
+    // 查看历史记录按钮
+    document.getElementById('history-button').addEventListener('click', function() {
+      alert('将显示历史SOAP记录列表');
+      // 这里可以添加跳转到历史记录页面的逻辑
+    });
+    
+    // 下载PDF按钮
+    document.getElementById('download-button').addEventListener('click', function() {
+      alert('正在生成PDF报告，请稍候...');
+      // 这里可以添加下载PDF的逻辑
+    });
+    
+    // 编辑按钮
+    document.getElementById('edit-button').addEventListener('click', function() {
+      alert('进入SOAP记录编辑模式');
+      // 这里可以添加跳转到编辑页面的逻辑
+    });
+  </script>
+</body>
+</html> 

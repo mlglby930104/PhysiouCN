@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - 患者信息</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* iOS特定样式 */
+    .back-button {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .ios-tab {
+      transition: all 0.2s;
+    }
+    
+    .ios-tab:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+    
+    .ios-button {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-button:active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    /* 患者信息页面特定样式 */
+    .patient-stat {
+      text-align: center;
+      padding: 8px 12px;
+      background-color: #F8F8F8;
+      border-radius: 12px;
+    }
+    
+    .medical-record {
+      background-color: #F8F8F8;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    
+    .medical-record:active {
+      background-color: #F0F0F0;
+      transform: scale(0.98);
+    }
+    
+    .treatment-record {
+      margin-bottom: 16px;
+    }
+    
+    .treatment-date {
+      background-color: var(--ios-primary);
+      color: white;
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 50px;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background-color: #E5E5EA;
+      border-radius: 3px;
+      margin-bottom: 16px;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background-color: var(--ios-primary);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <!-- iOS 风格患者信息页面 -->
+  <div class="device device-ios">
+    <div class="device-notch"></div>
+    <div class="device-screen">
+      <div class="ios-container">
+        <header class="ios-header">
+          <div class="back-button" id="back-button">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <h1 class="ios-title">患者信息</h1>
+        </header>
+        
+        <div class="ios-card" style="text-align: center; padding: 24px 16px;">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="患者头像" class="avatar avatar-large" style="margin: 0 auto 16px; width: 100px; height: 100px;">
+          <h2 style="font-size: 22px; font-weight: 600;">王先生</h2>
+          <p style="color: var(--ios-text-secondary); margin-top: 4px;">ID: PT20240615</p>
+          <div style="display: flex; justify-content: center; margin-top: 16px; gap: 20px;">
+            <div class="patient-stat">
+              <div style="font-size: 16px; font-weight: 600;">35</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary);">年龄</div>
+            </div>
+            <div class="patient-stat">
+              <div style="font-size: 16px; font-weight: 600;">178cm</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary);">身高</div>
+            </div>
+            <div class="patient-stat">
+              <div style="font-size: 16px; font-weight: 600;">75kg</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary);">体重</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="ios-card">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">基本信息</h3>
+          <div style="display: flex; margin-bottom: 12px;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">姓名</div>
+            <div>王先生</div>
+          </div>
+          <div style="display: flex; margin-bottom: 12px;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">性别</div>
+            <div>男</div>
+          </div>
+          <div style="display: flex; margin-bottom: 12px;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">出生日期</div>
+            <div>1989-05-15</div>
+          </div>
+          <div style="display: flex; margin-bottom: 12px;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">手机号</div>
+            <div>138****6789</div>
+          </div>
+          <div style="display: flex; margin-bottom: 12px;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">紧急联系人</div>
+            <div>王女士 (妻子)</div>
+          </div>
+          <div style="display: flex;">
+            <div style="width: 80px; color: var(--ios-text-secondary);">联系电话</div>
+            <div>139****5678</div>
+          </div>
+        </div>
+        
+        <div class="ios-card">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">病史记录</h3>
+          <div class="medical-record">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <div style="font-weight: 600;">腰椎间盘突出</div>
+              <div style="color: var(--ios-text-secondary); font-size: 14px;">2023-10-15</div>
+            </div>
+            <div style="font-size: 14px; color: var(--ios-text-secondary);">
+              L4-L5椎间盘突出，压迫神经根，导致右腿放射性疼痛。
+            </div>
+          </div>
+          <div class="medical-record">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <div style="font-weight: 600;">右肩周炎</div>
+              <div style="color: var(--ios-text-secondary); font-size: 14px;">2022-05-20</div>
+            </div>
+            <div style="font-size: 14px; color: var(--ios-text-secondary);">
+              右肩关节活动受限，伴有疼痛，尤其在外展和外旋时明显。
+            </div>
+          </div>
+        </div>
+        
+        <div class="ios-card">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">治疗记录</h3>
+          <div class="treatment-record">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+              <div class="treatment-date">
+                <div style="font-size: 16px; font-weight: 600;">12</div>
+                <div style="font-size: 12px;">6月</div>
+              </div>
+              <div>
+                <div style="font-weight: 600;">腰椎牵引治疗</div>
+                <div style="color: var(--ios-text-secondary); font-size: 14px;">李医生</div>
+              </div>
+            </div>
+            <div style="font-size: 14px; color: var(--ios-text-secondary); margin-left: 62px;">
+              进行了20分钟腰椎牵引，患者反馈疼痛有所缓解。建议继续进行核心肌群训练。
+            </div>
+          </div>
+          <div class="treatment-record">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+              <div class="treatment-date">
+                <div style="font-size: 16px; font-weight: 600;">05</div>
+                <div style="font-size: 12px;">6月</div>
+              </div>
+              <div>
+                <div style="font-weight: 600;">腰椎康复训练</div>
+                <div style="color: var(--ios-text-secondary); font-size: 14px;">王医生</div>
+              </div>
+            </div>
+            <div style="font-size: 14px; color: var(--ios-text-secondary); margin-left: 62px;">
+              进行了核心肌群训练和腰椎稳定性练习。患者配合良好，动作标准。
+            </div>
+          </div>
+          <button class="ios-button-secondary" style="width: 100%; margin-top: 16px; font-size: 14px;">
+            查看更多治疗记录
+          </button>
+        </div>
+        
+        <div class="ios-card">
+          <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">康复进度</h3>
+          <div style="background-color: #F8F8F8; border-radius: 12px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <div>疼痛指数</div>
+              <div style="color: var(--ios-primary); font-weight: 600;">3/10</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 30%;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <div>活动范围</div>
+              <div style="color: var(--ios-primary); font-weight: 600;">70%</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 70%;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <div>整体恢复</div>
+              <div style="color: var(--ios-primary); font-weight: 600;">65%</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: 65%;"></div>
+            </div>
+          </div>
+          <button class="ios-button" style="width: 100%; margin-top: 16px;">
+            查看详细康复报告
+          </button>
+        </div>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="ios-tab-bar">
+          <div class="ios-tab">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-calendar-alt"></i>
+            <span>预约</span>
+          </div>
+          <div class="ios-tab">
+            <i class="fas fa-clipboard-list"></i>
+            <span>记录</span>
+          </div>
+          <div class="ios-tab active">
+            <i class="far fa-user"></i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const tabs = document.querySelectorAll('.ios-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 医疗记录点击效果
+    const medicalRecords = document.querySelectorAll('.medical-record');
+    medicalRecords.forEach(record => {
+      record.addEventListener('click', function() {
+        // 这里可以添加点击后的详情展示逻辑
+        console.log('查看医疗记录详情');
+      });
+    });
+    
+    // 治疗记录点击效果
+    const treatmentRecords = document.querySelectorAll('.treatment-record');
+    treatmentRecords.forEach(record => {
+      record.addEventListener('click', function() {
+        // 这里可以添加点击后的详情展示逻辑
+        console.log('查看治疗记录详情');
+      });
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - 就诊前数据收集</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* iOS特定样式 */
+    .back-button {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .ios-tab {
+      transition: all 0.2s;
+    }
+    
+    .ios-tab:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+    
+    .ios-button {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-button:active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    /* 就诊前数据收集页面特定样式 */
+    .pain-scale {
+      display: flex;
+      justify-content: space-between;
+      margin: 16px 0;
+    }
+    
+    .pain-scale-item {
+      text-align: center;
+      width: 30px;
+    }
+    
+    .pain-scale-number {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .pain-scale-dot {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      margin: 0 auto;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #E5E5EA;
+    }
+    
+    .pain-scale-dot.selected {
+      background-color: var(--ios-primary);
+    }
+    
+    .human-body-container {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      margin: 20px auto;
+    }
+    
+    .human-body-img {
+      width: 100%;
+      height: auto;
+    }
+    
+    .pain-point {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: rgba(255, 59, 48, 0.7);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      border: 2px solid white;
+    }
+    
+    .upload-container {
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin: 16px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .upload-container:active {
+      background-color: #F8F8F8;
+    }
+    
+    .upload-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      color: #999;
+    }
+    
+    .uploaded-files {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    
+    .uploaded-file {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .uploaded-file img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-file {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .function-result {
+      background-color: #F8F8F8;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    
+    .function-result-item {
+      margin-bottom: 12px;
+    }
+    
+    .function-result-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .function-result-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .function-result-value {
+      color: #666;
+    }
+    
+    .slider-container {
+      margin: 16px 0;
+    }
+    
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #E5E5EA;
+      outline: none;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--ios-primary);
+      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .pain-type-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    
+    .pain-type-option {
+      background-color: #F8F8F8;
+      border: 1px solid #E5E5EA;
+      border-radius: 16px;
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .pain-type-option.selected {
+      background-color: var(--ios-primary);
+      color: white;
+      border-color: var(--ios-primary);
+    }
+    
+    .body-view-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    .body-view-button {
+      padding: 8px 16px;
+      background-color: #F8F8F8;
+      border: 1px solid #E5E5EA;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .body-view-button:first-child {
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+    
+    .body-view-button:last-child {
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    
+    .body-view-button.active {
+      background-color: var(--ios-primary);
+      color: white;
+      border-color: var(--ios-primary);
+    }
+    
+    .body-view {
+      display: none;
+    }
+    
+    .body-view.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- iOS 风格就诊前数据收集页面 -->
+  <div class="device device-ios">
+    <div class="device-notch"></div>
+    <div class="device-screen">
+      <div class="ios-container">
+        <header class="ios-header">
+          <div class="back-button" id="back-button">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <h1 class="ios-title">就诊前数据收集</h1>
+        </header>
+        
+        <form id="pre-visit-form">
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">疼痛评估</h3>
+            
+            <!-- 静息疼痛 -->
+            <label class="ios-label">静息疼痛 (0-10)</label>
+            <div class="pain-scale">
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">0</span>
+                <div class="pain-scale-dot selected" data-value="0" data-type="rest"></div>
+                <span style="font-size: 10px;">无痛</span>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">2</span>
+                <div class="pain-scale-dot" data-value="2" data-type="rest"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">4</span>
+                <div class="pain-scale-dot" data-value="4" data-type="rest"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">6</span>
+                <div class="pain-scale-dot" data-value="6" data-type="rest"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">8</span>
+                <div class="pain-scale-dot" data-value="8" data-type="rest"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">10</span>
+                <div class="pain-scale-dot" data-value="10" data-type="rest"></div>
+                <span style="font-size: 10px;">剧痛</span>
+              </div>
+            </div>
+            
+            <!-- 行动中疼痛 -->
+            <label class="ios-label mt-16">行动中疼痛 (0-10)</label>
+            <div class="pain-scale">
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">0</span>
+                <div class="pain-scale-dot selected" data-value="0" data-type="movement"></div>
+                <span style="font-size: 10px;">无痛</span>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">2</span>
+                <div class="pain-scale-dot" data-value="2" data-type="movement"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">4</span>
+                <div class="pain-scale-dot" data-value="4" data-type="movement"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">6</span>
+                <div class="pain-scale-dot" data-value="6" data-type="movement"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">8</span>
+                <div class="pain-scale-dot" data-value="8" data-type="movement"></div>
+              </div>
+              <div class="pain-scale-item">
+                <span class="pain-scale-number">10</span>
+                <div class="pain-scale-dot" data-value="10" data-type="movement"></div>
+                <span style="font-size: 10px;">剧痛</span>
+              </div>
+            </div>
+            
+            <!-- 出现疼痛的动作 -->
+            <label class="ios-label mt-16">出现疼痛的动作</label>
+            <textarea class="ios-input" style="height: 80px; resize: none;" placeholder="请描述在哪些动作下会出现疼痛，例如：弯腰、提重物、转身等..."></textarea>
+            
+            <!-- 疼痛描述 -->
+            <label class="ios-label mt-16">疼痛描述（可多选）</label>
+            <div class="pain-type-options">
+              <div class="pain-type-option" data-type="dull">钝痛</div>
+              <div class="pain-type-option" data-type="sharp">尖锐痛</div>
+              <div class="pain-type-option" data-type="burning">灼烧感</div>
+              <div class="pain-type-option" data-type="throbbing">跳痛</div>
+              <div class="pain-type-option" data-type="numbness">麻木感</div>
+              <div class="pain-type-option" data-type="tingling">刺痛</div>
+              <div class="pain-type-option" data-type="other">其他</div>
+            </div>
+            
+            <div id="other-pain-description" style="display: none;">
+              <label class="ios-label">其他疼痛描述</label>
+              <textarea class="ios-input" style="height: 80px; resize: none;" placeholder="请描述您的疼痛感受..."></textarea>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">功能障碍评估</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px; margin-bottom: 16px;">此部分将由治疗师在就诊后评估并填写，您可以在SOAP记录中查看评估结果。</p>
+            
+            <div class="function-result">
+              <div class="function-result-item">
+                <div class="function-result-title">尚未进行评估</div>
+                <div class="function-result-value">请在就诊时向治疗师详细描述您的功能障碍情况，治疗师将进行专业评估。</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">疼痛部位标注</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px; margin-bottom: 16px;">请在人体图示上标注您的疼痛部位</p>
+            
+            <div class="body-view-toggle">
+              <div class="body-view-button active" data-view="front">正面观</div>
+              <div class="body-view-button" data-view="back">背面观</div>
+            </div>
+            
+            <div class="body-view active" id="front-view">
+              <div class="human-body-container" id="human-body-front">
+                <img src="https://i.imgur.com/7BHzMCf.png" alt="人体正面图示" class="human-body-img">
+                <!-- 疼痛点将由JavaScript动态添加 -->
+              </div>
+            </div>
+            
+            <div class="body-view" id="back-view">
+              <div class="human-body-container" id="human-body-back">
+                <img src="https://i.imgur.com/jtMpDw8.png" alt="人体背面图示" class="human-body-img">
+                <!-- 疼痛点将由JavaScript动态添加 -->
+              </div>
+            </div>
+            
+            <p style="color: var(--ios-text-secondary); font-size: 12px; text-align: center; margin-top: 8px;">点击图示添加或移除疼痛点</p>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">上传相关图片/视频</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px; margin-bottom: 16px;">上传与您症状相关的图片或视频，帮助医生更好地了解您的情况</p>
+            
+            <div class="upload-container" id="upload-container">
+              <i class="fas fa-cloud-upload-alt upload-icon"></i>
+              <div>点击上传文件</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary); margin-top: 4px;">支持 JPG, PNG, MP4 格式</div>
+              <input type="file" id="file-upload" style="display: none;" accept="image/jpeg,image/png,video/mp4" multiple>
+            </div>
+            
+            <div class="uploaded-files" id="uploaded-files">
+              <!-- 上传的文件将在这里显示 -->
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">其他备注</h3>
+            <textarea class="ios-input" style="height: 100px; resize: none;" placeholder="请填写其他您认为医生需要了解的信息..."></textarea>
+          </div>
+          
+          <div class="ios-card">
+            <button type="submit" class="ios-button">提交数据</button>
+            <button type="button" class="ios-button-secondary mt-16" id="save-draft">保存草稿</button>
+          </div>
+        </form>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="ios-tab-bar">
+          <div class="ios-tab">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-calendar-alt"></i>
+            <span>预约</span>
+          </div>
+          <div class="ios-tab active">
+            <i class="fas fa-clipboard-list"></i>
+            <span>记录</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-user"></i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const tabs = document.querySelectorAll('.ios-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 疼痛等级选择
+    const painDots = document.querySelectorAll('.pain-scale-dot');
+    painDots.forEach(dot => {
+      dot.addEventListener('click', function() {
+        const type = this.getAttribute('data-type');
+        const value = this.getAttribute('data-value');
+        
+        // 移除同类型所有点的选中状态
+        document.querySelectorAll(`.pain-scale-dot[data-type="${type}"]`).forEach(d => {
+          d.classList.remove('selected');
+        });
+        
+        // 添加选中状态到当前点
+        this.classList.add('selected');
+      });
+    });
+    
+    // 疼痛类型选择
+    const painTypeOptions = document.querySelectorAll('.pain-type-option');
+    painTypeOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        
+        // 如果选择了"其他"，显示文本框
+        if (this.getAttribute('data-type') === 'other') {
+          document.getElementById('other-pain-description').style.display = 
+            this.classList.contains('selected') ? 'block' : 'none';
+        }
+      });
+    });
+    
+    // 人体视图切换
+    const bodyViewButtons = document.querySelectorAll('.body-view-button');
+    bodyViewButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const view = this.getAttribute('data-view');
+        
+        // 移除所有按钮的active类
+        bodyViewButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // 添加active类到当前按钮
+        this.classList.add('active');
+        
+        // 隐藏所有视图
+        document.querySelectorAll('.body-view').forEach(v => v.classList.remove('active'));
+        
+        // 显示当前视图
+        document.getElementById(`${view}-view`).classList.add('active');
+      });
+    });
+    
+    // 人体图上添加疼痛点
+    const humanBodyFront = document.getElementById('human-body-front');
+    const humanBodyBack = document.getElementById('human-body-back');
+    
+    [humanBodyFront, humanBodyBack].forEach(container => {
+      container.addEventListener('click', function(e) {
+        // 获取点击位置相对于容器的坐标
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // 计算百分比位置
+        const percentX = (x / rect.width) * 100;
+        const percentY = (y / rect.height) * 100;
+        
+        // 检查是否点击了已有的疼痛点
+        const clickedPoint = e.target.closest('.pain-point');
+        if (clickedPoint) {
+          // 如果点击了已有的疼痛点，则移除它
+          clickedPoint.remove();
+          return;
+        }
+        
+        // 创建新的疼痛点
+        const painPoint = document.createElement('div');
+        painPoint.className = 'pain-point';
+        painPoint.style.left = `${percentX}%`;
+        painPoint.style.top = `${percentY}%`;
+        
+        // 添加到容器中
+        this.appendChild(painPoint);
+      });
+    });
+    
+    // 文件上传功能
+    const uploadContainer = document.getElementById('upload-container');
+    const fileUpload = document.getElementById('file-upload');
+    const uploadedFiles = document.getElementById('uploaded-files');
+    
+    uploadContainer.addEventListener('click', function() {
+      fileUpload.click();
+    });
+    
+    fileUpload.addEventListener('change', function() {
+      const files = this.files;
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          const fileDiv = document.createElement('div');
+          fileDiv.className = 'uploaded-file';
+          
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = file.name;
+          
+          const removeBtn = document.createElement('div');
+          removeBtn.className = 'remove-file';
+          removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+          
+          removeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fileDiv.remove();
+          });
+          
+          fileDiv.appendChild(img);
+          fileDiv.appendChild(removeBtn);
+          uploadedFiles.appendChild(fileDiv);
+        };
+        
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // 表单提交
+    document.getElementById('pre-visit-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('数据已提交，医生将在就诊前查看您的信息');
+    });
+    
+    // 保存草稿
+    document.getElementById('save-draft').addEventListener('click', function() {
+      alert('草稿已保存，您可以稍后继续完成');
+    });
+  </script>
+</body>
+</html> 

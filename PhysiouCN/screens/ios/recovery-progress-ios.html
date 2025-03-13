@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>物理治疗预约系统 - 恢复进度</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --ios-primary: #007AFF;
+      --ios-secondary: #5AC8FA;
+      --ios-success: #4CD964;
+      --ios-warning: #FF9500;
+      --ios-danger: #FF3B30;
+      --ios-light-gray: #F2F2F7;
+      --ios-medium-gray: #C7C7CC;
+      --ios-dark-gray: #8E8E93;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    }
+    
+    body {
+      background-color: #F2F2F7;
+      color: #000;
+      line-height: 1.4;
+    }
+    
+    .ios-container {
+      max-width: 100%;
+      padding: 0;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .ios-header {
+      background-color: #fff;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .ios-back-button {
+      position: absolute;
+      left: 16px;
+      display: flex;
+      align-items: center;
+      color: var(--ios-primary);
+      font-size: 17px;
+      font-weight: 400;
+    }
+    
+    .ios-back-button i {
+      margin-right: 4px;
+      font-size: 14px;
+    }
+    
+    .ios-title {
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .ios-card {
+      background-color: #fff;
+      border-radius: 10px;
+      margin: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .ios-button {
+      display: block;
+      width: 100%;
+      background-color: var(--ios-primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .ios-button:active {
+      background-color: #0062CC;
+    }
+    
+    .ios-button-secondary {
+      display: block;
+      width: 100%;
+      background-color: #fff;
+      color: var(--ios-primary);
+      border: 1px solid var(--ios-primary);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .ios-button-secondary:active {
+      background-color: #F2F2F7;
+    }
+    
+    .ios-tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #fff;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    .ios-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--ios-dark-gray);
+      font-size: 10px;
+    }
+    
+    .ios-tab i {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    
+    .ios-tab.active {
+      color: var(--ios-primary);
+    }
+    
+    .flex {
+      display: flex;
+    }
+    
+    .justify-between {
+      justify-content: space-between;
+    }
+    
+    .align-center {
+      align-items: center;
+    }
+    
+    .mt-16 {
+      margin-top: 16px;
+    }
+    
+    .progress-card {
+      margin-bottom: 16px;
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .progress-title {
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .progress-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ios-primary);
+    }
+    
+    .progress-bar {
+      height: 8px;
+      background-color: var(--ios-light-gray);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--ios-primary);
+      border-radius: 4px;
+    }
+    
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ios-dark-gray);
+      margin-top: 4px;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 200px;
+      margin: 20px 0;
+      padding-left: 40px;
+      padding-bottom: 30px;
+    }
+    
+    .chart-y-axis {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 30px;
+      width: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-right: 8px;
+      font-size: 12px;
+      color: var(--ios-dark-gray);
+    }
+    
+    .chart-x-axis {
+      position: absolute;
+      left: 40px;
+      right: 0;
+      bottom: 0;
+      height: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ios-dark-gray);
+    }
+    
+    .chart-grid {
+      position: absolute;
+      left: 40px;
+      right: 0;
+      top: 0;
+      bottom: 30px;
+    }
+    
+    .chart-grid-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .chart-line {
+      position: absolute;
+      left: 40px;
+      right: 0;
+      top: 0;
+      bottom: 30px;
+      width: calc(100% - 40px);
+      height: calc(100% - 30px);
+    }
+    
+    .chart-line-path {
+      fill: none;
+      stroke: var(--ios-primary);
+      stroke-width: 2;
+    }
+    
+    .chart-area-path {
+      fill: rgba(0, 122, 255, 0.1);
+      stroke: none;
+    }
+    
+    .chart-point {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: #fff;
+      border: 2px solid var(--ios-primary);
+      border-radius: 50%;
+      transform: translate(-4px, -4px);
+    }
+    
+    .milestone-timeline {
+      position: relative;
+      padding-left: 20px;
+    }
+    
+    .milestone-item {
+      position: relative;
+      padding-bottom: 24px;
+    }
+    
+    .milestone-item:last-child {
+      padding-bottom: 0;
+    }
+    
+    .milestone-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: -12px;
+      bottom: 0;
+      width: 2px;
+      background-color: var(--ios-medium-gray);
+    }
+    
+    .milestone-dot {
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 2px solid var(--ios-medium-gray);
+      z-index: 1;
+    }
+    
+    .milestone-dot-completed {
+      background-color: var(--ios-success);
+      border-color: var(--ios-success);
+    }
+    
+    .milestone-dot-current {
+      background-color: #fff;
+      border-color: var(--ios-primary);
+    }
+    
+    .milestone-dot-future {
+      background-color: #fff;
+      border-color: var(--ios-medium-gray);
+    }
+    
+    .milestone-date {
+      font-size: 12px;
+      color: var(--ios-dark-gray);
+      margin-bottom: 4px;
+    }
+    
+    .milestone-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .milestone-description {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .exercise-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--ios-light-gray);
+    }
+    
+    .exercise-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    
+    .exercise-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--ios-light-gray);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      color: var(--ios-primary);
+    }
+    
+    .exercise-info {
+      flex: 1;
+    }
+    
+    .exercise-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .exercise-description {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .exercise-status {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    
+    .exercise-status-completed {
+      background-color: #E8F5E9;
+      color: #4CAF50;
+    }
+    
+    .exercise-status-in-progress {
+      background-color: #FFF8E1;
+      color: #FFA000;
+    }
+    
+    .exercise-status-not-started {
+      background-color: #F5F5F5;
+      color: #9E9E9E;
+    }
+  </style>
+</head>
+<body>
+  <div class="ios-container">
+    <header class="ios-header">
+      <div class="ios-back-button">
+        <i class="fas fa-chevron-left"></i>
+        <span>返回</span>
+      </div>
+      <h1 class="ios-title">恢复进度</h1>
+    </header>
+    
+    <div class="ios-card">
+      <div class="flex justify-between align-center">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 600;">腰椎康复计划</h2>
+          <p style="color: #666; margin-top: 4px;">开始日期: 2023年5月15日</p>
+        </div>
+        <div style="background-color: #FFF8E1; color: #FFA000; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">
+          进行中
+        </div>
+      </div>
+    </div>
+    
+    <div class="ios-card">
+      <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">总体恢复进度</h3>
+      
+      <div class="progress-card">
+        <div class="progress-header">
+          <span class="progress-title">总体完成度</span>
+          <span class="progress-value">65%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 65%;"></div>
+        </div>
+        <div class="progress-labels">
+          <span>开始</span>
+          <span>目标</span>
+        </div>
+      </div>
+      
+      <div class="progress-card">
+        <div class="progress-header">
+          <span class="progress-title">疼痛改善</span>
+          <span class="progress-value">70%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 70%;"></div>
+        </div>
+      </div>
+      
+      <div class="progress-card">
+        <div class="progress-header">
+          <span class="progress-title">活动度改善</span>
+          <span class="progress-value">60%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 60%;"></div>
+        </div>
+      </div>
+      
+      <div class="progress-card">
+        <div class="progress-header">
+          <span class="progress-title">肌力改善</span>
+          <span class="progress-value">55%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 55%;"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ios-card">
+      <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">疼痛趋势</h3>
+      
+      <div class="chart-container">
+        <div class="chart-y-axis">
+          <span>10</span>
+          <span>8</span>
+          <span>6</span>
+          <span>4</span>
+          <span>2</span>
+          <span>0</span>
+        </div>
+        
+        <div class="chart-grid">
+          <div class="chart-grid-line" style="top: 0%;"></div>
+          <div class="chart-grid-line" style="top: 20%;"></div>
+          <div class="chart-grid-line" style="top: 40%;"></div>
+          <div class="chart-grid-line" style="top: 60%;"></div>
+          <div class="chart-grid-line" style="top: 80%;"></div>
+        </div>
+        
+        <div class="chart-x-axis">
+          <span>5/15</span>
+          <span>5/22</span>
+          <span>5/29</span>
+          <span>6/5</span>
+          <span>6/12</span>
+        </div>
+        
+        <svg class="chart-line" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path class="chart-line-path" d="M0,70 L25,60 L50,50 L75,40 L100,30"></path>
+          <path class="chart-area-path" d="M0,70 L25,60 L50,50 L75,40 L100,30 L100,100 L0,100 Z"></path>
+        </svg>
+        
+        <div class="chart-point" style="left: calc(0% + 40px); top: 70%;"></div>
+        <div class="chart-point" style="left: calc(25% + 40px); top: 60%;"></div>
+        <div class="chart-point" style="left: calc(50% + 40px); top: 50%;"></div>
+        <div class="chart-point" style="left: calc(75% + 40px); top: 40%;"></div>
+        <div class="chart-point" style="left: calc(100% + 40px); top: 30%;"></div>
+      </div>
+      
+      <p style="font-size: 14px; color: #666; text-align: center;">疼痛评分 (0-10)</p>
+    </div>
+    
+    <div class="ios-card">
+      <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">康复里程碑</h3>
+      
+      <div class="milestone-timeline">
+        <div class="milestone-item">
+          <div class="milestone-dot milestone-dot-completed"></div>
+          <div class="milestone-date">2023年5月15日</div>
+          <div class="milestone-title">初始评估</div>
+          <div class="milestone-description">完成初始评估，制定康复计划</div>
+        </div>
+        
+        <div class="milestone-item">
+          <div class="milestone-dot milestone-dot-completed"></div>
+          <div class="milestone-date">2023年5月29日</div>
+          <div class="milestone-title">第一阶段完成</div>
+          <div class="milestone-description">完成基础活动度训练，疼痛减轻20%</div>
+        </div>
+        
+        <div class="milestone-item">
+          <div class="milestone-dot milestone-dot-current"></div>
+          <div class="milestone-date">2023年6月12日</div>
+          <div class="milestone-title">第二阶段进行中</div>
+          <div class="milestone-description">核心肌群训练，功能性活动训练</div>
+        </div>
+        
+        <div class="milestone-item">
+          <div class="milestone-dot milestone-dot-future"></div>
+          <div class="milestone-date">2023年6月26日</div>
+          <div class="milestone-title">第三阶段</div>
+          <div class="milestone-description">高级功能训练，回归日常活动</div>
+        </div>
+        
+        <div class="milestone-item">
+          <div class="milestone-dot milestone-dot-future"></div>
+          <div class="milestone-date">2023年7月10日</div>
+          <div class="milestone-title">康复计划完成</div>
+          <div class="milestone-description">达到康复目标，制定维持计划</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ios-card">
+      <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">家庭锻炼计划</h3>
+      
+      <div class="exercise-item">
+        <div class="exercise-icon">
+          <i class="fas fa-running"></i>
+        </div>
+        <div class="exercise-info">
+          <div class="exercise-title">猫牛式伸展</div>
+          <div class="exercise-description">每日3组，每组10次</div>
+        </div>
+        <div class="exercise-status exercise-status-completed">已完成</div>
+      </div>
+      
+      <div class="exercise-item">
+        <div class="exercise-icon">
+          <i class="fas fa-dumbbell"></i>
+        </div>
+        <div class="exercise-info">
+          <div class="exercise-title">平板支撑</div>
+          <div class="exercise-description">每日3组，每组30秒</div>
+        </div>
+        <div class="exercise-status exercise-status-in-progress">进行中</div>
+      </div>
+      
+      <div class="exercise-item">
+        <div class="exercise-icon">
+          <i class="fas fa-walking"></i>
+        </div>
+        <div class="exercise-info">
+          <div class="exercise-title">骨盆倾斜练习</div>
+          <div class="exercise-description">每日3次，每次10个</div>
+        </div>
+        <div class="exercise-status exercise-status-in-progress">进行中</div>
+      </div>
+      
+      <div class="exercise-item">
+        <div class="exercise-icon">
+          <i class="fas fa-biking"></i>
+        </div>
+        <div class="exercise-info">
+          <div class="exercise-title">桥式练习</div>
+          <div class="exercise-description">每日2组，每组15次</div>
+        </div>
+        <div class="exercise-status exercise-status-not-started">未开始</div>
+      </div>
+    </div>
+    
+    <div class="ios-card">
+      <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">下一步计划</h3>
+      
+      <p style="font-size: 14px; line-height: 1.5; color: #666;">
+        根据您的恢复进度，我们建议继续进行核心肌群训练，并逐步增加功能性活动训练的强度。下次复诊时，我们将评估您的进展，并可能调整康复计划。
+      </p>
+      
+      <div style="margin-top: 16px;">
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+          <i class="fas fa-calendar-alt" style="color: var(--ios-primary); margin-right: 8px;"></i>
+          <span>下次复诊: 2023年6月19日 14:30</span>
+        </div>
+        
+        <div style="display: flex; align-items: center;">
+          <i class="fas fa-user-md" style="color: var(--ios-primary); margin-right: 8px;"></i>
+          <span>治疗师: 李医生</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ios-card">
+      <button class="ios-button">查看详细报告</button>
+      <button class="ios-button-secondary mt-16">分享进度</button>
+    </div>
+    
+    <div style="height: 80px;"></div>
+    
+    <div class="ios-tab-bar">
+      <div class="ios-tab">
+        <i class="fas fa-home"></i>
+        <span>首页</span>
+      </div>
+      <div class="ios-tab">
+        <i class="far fa-calendar-alt"></i>
+        <span>预约</span>
+      </div>
+      <div class="ios-tab active">
+        <i class="fas fa-clipboard-list"></i>
+        <span>记录</span>
+      </div>
+      <div class="ios-tab">
+        <i class="far fa-user"></i>
+        <span>我的</span>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    document.querySelector('.ios-back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+  </script>
+</body>
+</html> 

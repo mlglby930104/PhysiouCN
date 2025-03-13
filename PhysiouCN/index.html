@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>物理治疗预约系统 - 高保真原型</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .prototype-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .prototype-title {
+      font-size: 32px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .prototype-subtitle {
+      font-size: 18px;
+      color: #666;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .prototype-section {
+      margin-bottom: 60px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+    
+    .section-description {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+      max-width: 1000px;
+    }
+    
+    .device-label {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #555;
+    }
+    
+    .device-container {
+      margin-bottom: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    
+    /* 导航和平台切换按钮基础样式 */
+    .button-base {
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .navigation {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-button {
+      padding: 10px 20px;
+      background-color: #007AFF;
+      color: white;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-bottom: 5px;
+      composes: button-base;
+    }
+    
+    .nav-button:hover {
+      background-color: #0056b3;
+    }
+    
+    .nav-button.active {
+      background-color: #0056b3;
+      font-weight: 500;
+    }
+    
+    .platform-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    
+    .platform-button {
+      padding: 8px 16px;
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .platform-button:first-child {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    
+    .platform-button:last-child {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+    
+    .platform-button.active {
+      background-color: #007AFF;
+      color: white;
+      border-color: #007AFF;
+    }
+    
+    .platform-content {
+      display: none;
+    }
+    
+    .platform-content.active {
+      display: block;
+    }
+    
+    /* 手机设备模拟样式 */
+    .phone-device {
+      width: 375px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      border-radius: 20px;
+      overflow: hidden;
+      background-color: #fff;
+      position: relative;
+    }
+    
+    .ios-device {
+      border-radius: 40px;
+      padding-top: 20px;
+      background-color: #f8f8f8;
+    }
+    
+    .android-device {
+      border-radius: 20px;
+      padding-top: 10px;
+      background-color: #fafafa;
+    }
+    
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 20px;
+      background-color: #f8f8f8;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+      z-index: 10;
+    }
+    
+    .phone-content {
+      width: 100%;
+      min-height: 700px;
+      display: block;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 80px; /* 为底部导航预留空间 */
+    }
+    
+    /* 下载按钮样式 */
+    .download-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .download-button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 5px;
+    }
+    
+    .download-button:hover {
+      background-color: #388E3C;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+      .prototype-title {
+        font-size: 24px;
+      }
+      
+      .prototype-subtitle {
+        font-size: 16px;
+      }
+      
+      .section-title {
+        font-size: 20px;
+      }
+      
+      .phone-device {
+        width: 320px;
+      }
+      
+      .phone-content {
+        min-height: 600px;
+      }
+    }
+    
+    /* 加载状态样式 */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+    }
+    
+    .loading::after {
+      content: "加载中...";
+      color: #666;
+      font-size: 16px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    /* 错误消息样式 */
+    .error-message {
+      padding: 20px;
+      color: #d32f2f;
+      text-align: center;
+      background-color: #ffebee;
+      border-radius: 8px;
+      margin: 20px;
+      border: 1px solid #ef9a9a;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .error-message p {
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    
+    .error-message button {
+      background-color: #007AFF;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .error-message button:hover {
+      background-color: #0056b3;
+    }
+    
+    /* 成功消息样式 */
+    .success-message {
+      padding: 15px;
+      color: white;
+      text-align: center;
+      background-color: #4CAF50;
+      border-radius: 8px;
+      margin: 10px 0;
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-header">
+    <h1 class="prototype-title">物理治疗预约系统 - 高保真原型</h1>
+    <p class="prototype-subtitle">一个现代化的物理治疗预约管理系统，帮助患者轻松预约康复治疗，跟踪康复进度</p>
+  </div>
+  
+  <div class="navigation">
+    <button class="nav-button active" data-page="home">首页</button>
+    <button class="nav-button" data-page="booking">预约</button>
+    <button class="nav-button" data-page="patient-info">患者信息</button>
+    <button class="nav-button" data-page="pre-visit">就诊前数据收集</button>
+    <button class="nav-button" data-page="soap">SOAP记录</button>
+    <button class="nav-button" data-page="treatment-history">治疗历史</button>
+    <button class="nav-button" data-page="recovery-progress">恢复进度</button>
+    <button class="nav-button" data-page="post-visit-feedback">就诊后反馈</button>
+  </div>
+  
+  <!-- 首页部分 -->
+  <div class="prototype-section" id="home-section">
+    <h2 class="section-title">首页界面</h2>
+    <p class="section-description">首页展示用户的基本信息、即将到来的预约、推荐治疗师和康复项目，让用户可以快速了解自己的康复状态和进行预约。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" id="ios-toggle" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" id="android-toggle" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="home-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="home-ios-content" data-content-src="screens/ios/home-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="home-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="home-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="home-android-content" data-content-src="screens/android/home-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="home-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 预约部分 -->
+  <div class="prototype-section" id="booking-section" style="display: none;">
+    <h2 class="section-title">预约界面</h2>
+    <p class="section-description">预约界面允许用户选择康复项目、治疗师、日期和时间，并添加备注信息，完成康复治疗的预约流程。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="booking-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="booking-ios-content" data-content-src="screens/ios/booking-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="booking-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="booking-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="booking-android-content" data-content-src="screens/android/booking-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="booking-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 患者信息部分 -->
+  <div class="prototype-section" id="patient-info-section" style="display: none;">
+    <h2 class="section-title">患者信息界面</h2>
+    <p class="section-description">患者信息界面展示用户的基本信息、病史记录、治疗记录和康复进度，帮助用户了解自己的康复情况。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="patient-info-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="patient-info-ios-content" data-content-src="screens/ios/patient-info-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="patient-info-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="patient-info-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="patient-info-android-content" data-content-src="screens/android/patient-info-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="patient-info-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 就诊前数据收集部分 -->
+  <div class="prototype-section" id="pre-visit-section" style="display: none;">
+    <h2 class="section-title">就诊前数据收集界面</h2>
+    <p class="section-description">就诊前数据收集界面允许患者在就诊前提交疼痛评估、功能障碍评估、疼痛部位标注等信息，帮助医生更好地了解患者情况。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="pre-visit-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="pre-visit-ios-content" data-content-src="screens/ios/pre-visit-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="pre-visit-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="pre-visit-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="pre-visit-android-content" data-content-src="screens/android/pre-visit-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="pre-visit-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- SOAP记录部分 -->
+  <div class="prototype-section" id="soap-section" style="display: none;">
+    <h2 class="section-title">SOAP记录界面</h2>
+    <p class="section-description">SOAP记录界面展示医生的主观资料、客观资料、评估和计划，帮助患者了解自己的诊断和治疗计划。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="soap-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="soap-ios-content" data-content-src="screens/ios/soap-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="soap-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="soap-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="soap-android-content" data-content-src="screens/android/soap-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="soap-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 治疗历史部分 -->
+  <div class="prototype-section" id="treatment-history-section" style="display: none;">
+    <h2 class="section-title">治疗历史界面</h2>
+    <p class="section-description">治疗历史界面展示患者的历史治疗记录，包括已完成、即将到来和已取消的预约，帮助患者了解自己的治疗历程。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="treatment-history-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="treatment-history-ios-content" data-content-src="screens/ios/treatment-history-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="treatment-history-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="treatment-history-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="treatment-history-android-content" data-content-src="screens/android/treatment-history-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="treatment-history-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 恢复进度部分 -->
+  <div class="prototype-section" id="recovery-progress-section" style="display: none;">
+    <h2 class="section-title">恢复进度界面</h2>
+    <p class="section-description">恢复进度界面展示患者的康复进展，包括总体恢复进度、疼痛趋势、康复里程碑和家庭锻炼计划，帮助患者了解自己的康复情况。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="recovery-progress-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="recovery-progress-ios-content" data-content-src="screens/ios/recovery-progress-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="recovery-progress-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="recovery-progress-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="recovery-progress-android-content" data-content-src="screens/android/recovery-progress-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="recovery-progress-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 就诊后反馈部分 -->
+  <div class="prototype-section" id="post-visit-feedback-section" style="display: none;">
+    <h2 class="section-title">就诊后反馈界面</h2>
+    <p class="section-description">就诊后反馈界面允许患者对治疗体验进行评价，包括总体评价、满意度评价、标签评价和治疗效果反馈，帮助医疗机构改进服务。</p>
+    
+    <div class="platform-toggle">
+      <button class="platform-button active" data-platform="ios">iOS 风格</button>
+      <button class="platform-button" data-platform="android">Android 风格</button>
+    </div>
+    
+    <div class="device-container">
+      <div class="platform-content active" id="post-visit-feedback-ios">
+        <div class="device-label">iOS 风格</div>
+        <div class="phone-device ios-device">
+          <div class="phone-notch"></div>
+          <div class="phone-content" id="post-visit-feedback-ios-content" data-content-src="screens/ios/post-visit-feedback-ios.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="post-visit-feedback-ios-content">下载截图</button>
+        </div>
+      </div>
+      <div class="platform-content" id="post-visit-feedback-android">
+        <div class="device-label">Android 风格</div>
+        <div class="phone-device android-device">
+          <div class="phone-content" id="post-visit-feedback-android-content" data-content-src="screens/android/post-visit-feedback-android.html">
+            <div class="loading"></div>
+          </div>
+        </div>
+        <div class="download-section">
+          <button class="download-button" data-target="post-visit-feedback-android-content">下载截图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html> 

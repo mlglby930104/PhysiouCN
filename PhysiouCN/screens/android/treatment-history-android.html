@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - 治疗历史</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* Android特定样式 */
+    .material-card {
+      background-color: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .material-button {
+      background-color: var(--android-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .material-button:hover {
+      background-color: var(--android-primary-dark);
+    }
+    
+    .material-button-secondary {
+      background-color: transparent;
+      color: var(--android-primary);
+      border: 1px solid var(--android-primary);
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 8px;
+      transition: background-color 0.3s;
+    }
+    
+    .material-button-secondary:hover {
+      background-color: rgba(0,0,0,0.05);
+    }
+    
+    .ripple {
+      position: absolute;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+    
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+    
+    /* 治疗历史页面特定样式 */
+    .history-timeline {
+      position: relative;
+      margin: 20px 0;
+    }
+    
+    .history-timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 16px;
+      width: 2px;
+      background-color: #E0E0E0;
+    }
+    
+    .history-item {
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 24px;
+    }
+    
+    .history-dot {
+      position: absolute;
+      left: 10px;
+      top: 0;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background-color: #fff;
+      border: 2px solid;
+      z-index: 1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .history-dot-completed {
+      border-color: #4CAF50;
+    }
+    
+    .history-dot-upcoming {
+      border-color: #2196F3;
+    }
+    
+    .history-dot-cancelled {
+      border-color: #F44336;
+    }
+    
+    .history-date {
+      font-size: 12px;
+      color: var(--android-text-secondary);
+      margin-bottom: 4px;
+    }
+    
+    .history-content {
+      background-color: #FFFFFF;
+      border-radius: 4px;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .history-title {
+      font-weight: 500;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .history-status {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .history-status i {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+    
+    .history-status-completed {
+      background-color: #E8F5E9;
+      color: #4CAF50;
+    }
+    
+    .history-status-upcoming {
+      background-color: #E3F2FD;
+      color: #2196F3;
+    }
+    
+    .history-status-cancelled {
+      background-color: #FFEBEE;
+      color: #F44336;
+    }
+    
+    .history-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .history-detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .history-detail-label {
+      font-size: 12px;
+      color: var(--android-text-secondary);
+      margin-bottom: 2px;
+    }
+    
+    .history-detail-value {
+      font-size: 14px;
+      color: var(--android-text-primary);
+    }
+    
+    .history-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    
+    .history-action-btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .history-action-primary {
+      background-color: var(--android-primary);
+      color: white;
+    }
+    
+    .history-action-secondary {
+      background-color: #F5F5F5;
+      color: var(--android-primary);
+    }
+    
+    .history-filter {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 8px 0;
+      margin-bottom: 16px;
+    }
+    
+    .history-filter-item {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      white-space: nowrap;
+      cursor: pointer;
+      background-color: #F5F5F5;
+      color: var(--android-text-primary);
+    }
+    
+    .history-filter-item.active {
+      background-color: var(--android-primary);
+      color: white;
+    }
+    
+    .search-bar {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 48px;
+      border-radius: 4px;
+      border: none;
+      background-color: #F5F5F5;
+      font-size: 16px;
+      color: var(--android-text-primary);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--android-text-secondary);
+    }
+    
+    .fab {
+      position: fixed;
+      bottom: 80px;
+      right: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background-color: var(--android-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s;
+    }
+    
+    .fab:hover {
+      background-color: var(--android-primary-dark);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+    
+    .fab i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Android 风格治疗历史页面 -->
+  <div class="device device-android">
+    <div class="device-screen">
+      <div class="android-container">
+        <header class="android-header">
+          <div class="android-header-left">
+            <i class="material-icons android-back-button" id="back-button">arrow_back</i>
+          </div>
+          <h1 class="android-title">治疗历史</h1>
+          <div class="android-header-right">
+            <i class="material-icons">more_vert</i>
+          </div>
+        </header>
+        
+        <div class="material-card">
+          <div class="search-bar">
+            <i class="material-icons search-icon">search</i>
+            <input type="text" class="search-input" placeholder="搜索治疗记录...">
+          </div>
+          
+          <div class="history-filter">
+            <div class="history-filter-item active">全部</div>
+            <div class="history-filter-item">已完成</div>
+            <div class="history-filter-item">即将到来</div>
+            <div class="history-filter-item">已取消</div>
+            <div class="history-filter-item">腰椎康复</div>
+            <div class="history-filter-item">颈椎康复</div>
+            <div class="history-filter-item">肩关节康复</div>
+          </div>
+        </div>
+        
+        <div class="history-timeline">
+          <!-- 已完成的治疗 -->
+          <div class="history-item">
+            <div class="history-dot history-dot-completed"></div>
+            <div class="history-date">2023年6月12日 14:30</div>
+            <div class="history-content material-card">
+              <div class="history-title">
+                <span>腰椎康复治疗</span>
+                <span class="history-status history-status-completed">
+                  <i class="material-icons">check_circle</i>
+                  已完成
+                </span>
+              </div>
+              <div class="history-details">
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗师</span>
+                  <span class="history-detail-value">李医生</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗时长</span>
+                  <span class="history-detail-value">45分钟</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗项目</span>
+                  <span class="history-detail-value">腰椎牵引、手法治疗</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗地点</span>
+                  <span class="history-detail-value">康复中心 3楼</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                <div class="history-action-btn history-action-primary">查看SOAP记录</div>
+                <div class="history-action-btn history-action-secondary">查看恢复进度</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 已完成的治疗 -->
+          <div class="history-item">
+            <div class="history-dot history-dot-completed"></div>
+            <div class="history-date">2023年6月5日 10:00</div>
+            <div class="history-content material-card">
+              <div class="history-title">
+                <span>腰椎康复治疗</span>
+                <span class="history-status history-status-completed">
+                  <i class="material-icons">check_circle</i>
+                  已完成
+                </span>
+              </div>
+              <div class="history-details">
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗师</span>
+                  <span class="history-detail-value">李医生</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗时长</span>
+                  <span class="history-detail-value">60分钟</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗项目</span>
+                  <span class="history-detail-value">腰椎牵引、核心训练</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗地点</span>
+                  <span class="history-detail-value">康复中心 3楼</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                <div class="history-action-btn history-action-primary">查看SOAP记录</div>
+                <div class="history-action-btn history-action-secondary">查看恢复进度</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 即将到来的治疗 -->
+          <div class="history-item">
+            <div class="history-dot history-dot-upcoming"></div>
+            <div class="history-date">2023年6月19日 15:00</div>
+            <div class="history-content material-card">
+              <div class="history-title">
+                <span>腰椎康复治疗</span>
+                <span class="history-status history-status-upcoming">
+                  <i class="material-icons">event</i>
+                  即将到来
+                </span>
+              </div>
+              <div class="history-details">
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗师</span>
+                  <span class="history-detail-value">李医生</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">预计时长</span>
+                  <span class="history-detail-value">45分钟</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗项目</span>
+                  <span class="history-detail-value">腰椎牵引、功能训练</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗地点</span>
+                  <span class="history-detail-value">康复中心 3楼</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                <div class="history-action-btn history-action-primary">填写就诊前数据</div>
+                <div class="history-action-btn history-action-secondary">取消预约</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 已取消的治疗 -->
+          <div class="history-item">
+            <div class="history-dot history-dot-cancelled"></div>
+            <div class="history-date">2023年5月28日 16:30</div>
+            <div class="history-content material-card">
+              <div class="history-title">
+                <span>颈椎康复治疗</span>
+                <span class="history-status history-status-cancelled">
+                  <i class="material-icons">cancel</i>
+                  已取消
+                </span>
+              </div>
+              <div class="history-details">
+                <div class="history-detail-item">
+                  <span class="history-detail-label">治疗师</span>
+                  <span class="history-detail-value">王医生</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">预计时长</span>
+                  <span class="history-detail-value">30分钟</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">取消原因</span>
+                  <span class="history-detail-value">个人原因</span>
+                </div>
+                <div class="history-detail-item">
+                  <span class="history-detail-label">取消时间</span>
+                  <span class="history-detail-value">2023-05-27 10:15</span>
+                </div>
+              </div>
+              <div class="history-actions">
+                <div class="history-action-btn history-action-primary">重新预约</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="fab" id="filter-button">
+          <i class="material-icons">filter_list</i>
+        </div>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="android-bottom-nav">
+          <div class="android-nav-item">
+            <i class="material-icons">home</i>
+            <span>首页</span>
+          </div>
+          <div class="android-nav-item">
+            <i class="material-icons">event</i>
+            <span>预约</span>
+          </div>
+          <div class="android-nav-item active">
+            <i class="material-icons">description</i>
+            <span>记录</span>
+          </div>
+          <div class="android-nav-item">
+            <i class="material-icons">person</i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const navItems = document.querySelectorAll('.android-nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        navItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 添加涟漪效果
+    const buttons = document.querySelectorAll('.history-action-btn, .fab, .history-filter-item');
+    buttons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        const x = e.clientX - e.target.getBoundingClientRect().left;
+        const y = e.clientY - e.target.getBoundingClientRect().top;
+        
+        const ripple = document.createElement('span');
+        ripple.classList.add('ripple');
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+    
+    // 筛选器交互
+    const filterItems = document.querySelectorAll('.history-filter-item');
+    filterItems.forEach(item => {
+      item.addEventListener('click', function() {
+        filterItems.forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 这里可以添加筛选逻辑
+        const filterType = this.textContent.trim();
+        console.log('筛选类型:', filterType);
+        
+        // 示例：根据筛选类型显示/隐藏相应的历史记录
+        // 实际应用中可能需要从服务器获取筛选后的数据
+      });
+    });
+    
+    // 搜索功能
+    const searchInput = document.querySelector('.search-input');
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase().trim();
+      console.log('搜索关键词:', searchTerm);
+      
+      // 这里可以添加搜索逻辑
+      // 例如根据关键词过滤历史记录
+    });
+    
+    // 查看SOAP记录按钮
+    const soapButtons = document.querySelectorAll('.history-action-primary');
+    soapButtons.forEach(button => {
+      if (button.textContent.trim() === '查看SOAP记录') {
+        button.addEventListener('click', function() {
+          const historyItem = this.closest('.history-item');
+          const treatmentTitle = historyItem.querySelector('.history-title span').textContent;
+          const treatmentDate = historyItem.querySelector('.history-date').textContent;
+          
+          console.log('查看SOAP记录:', treatmentTitle, treatmentDate);
+          // 这里可以添加跳转到SOAP记录页面的逻辑
+          window.location.href = 'soap-android.html';
+        });
+      } else if (button.textContent.trim() === '填写就诊前数据') {
+        button.addEventListener('click', function() {
+          window.location.href = 'pre-visit-android.html';
+        });
+      } else if (button.textContent.trim() === '重新预约') {
+        button.addEventListener('click', function() {
+          window.location.href = 'booking-android.html';
+        });
+      }
+    });
+    
+    // 查看恢复进度按钮
+    const progressButtons = document.querySelectorAll('.history-action-secondary');
+    progressButtons.forEach(button => {
+      if (button.textContent.trim() === '查看恢复进度') {
+        button.addEventListener('click', function() {
+          const historyItem = this.closest('.history-item');
+          const treatmentTitle = historyItem.querySelector('.history-title span').textContent;
+          
+          console.log('查看恢复进度:', treatmentTitle);
+          // 这里可以添加跳转到恢复进度页面的逻辑
+        });
+      } else if (button.textContent.trim() === '取消预约') {
+        button.addEventListener('click', function() {
+          if (confirm('确定要取消此预约吗？')) {
+            console.log('预约已取消');
+            // 这里可以添加取消预约的逻辑
+          }
+        });
+      }
+    });
+    
+    // 筛选按钮
+    document.getElementById('filter-button').addEventListener('click', function() {
+      alert('打开高级筛选选项');
+      // 这里可以添加显示高级筛选对话框的逻辑
+    });
+  </script>
+</body>
+</html> 

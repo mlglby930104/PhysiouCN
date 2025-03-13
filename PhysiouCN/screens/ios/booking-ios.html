@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - 预约</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* iOS特定样式 */
+    .back-button {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .ios-tab {
+      transition: all 0.2s;
+    }
+    
+    .ios-tab:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+    
+    .ios-button {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-button:active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    .ios-button.loading {
+      background-color: #8cc5ff;
+      pointer-events: none;
+    }
+    
+    .ios-button.loading::before {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .therapist-card {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .therapist-card:active {
+      transform: scale(0.95);
+    }
+    
+    .therapist-card.selected {
+      border-color: var(--ios-primary) !important;
+      background-color: rgba(0, 122, 255, 0.05);
+    }
+    
+    .time-slot {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .time-slot:active {
+      transform: scale(0.95);
+    }
+    
+    .time-slot.selected {
+      border: 2px solid var(--ios-primary);
+      background-color: rgba(0, 122, 255, 0.05);
+    }
+    
+    .time-slot.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #f0f0f0;
+      color: #999;
+    }
+    
+    .time-slot.disabled:active {
+      transform: none;
+    }
+    
+    /* 弹窗样式 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background-color: white;
+      border-radius: 12px;
+      padding: 24px;
+      width: 80%;
+      max-width: 320px;
+      text-align: center;
+      transform: scale(0.9);
+      transition: all 0.3s;
+    }
+    
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+    
+    .success-icon {
+      width: 60px;
+      height: 60px;
+      background-color: #4CD964;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: white;
+      font-size: 32px;
+    }
+  </style>
+</head>
+<body>
+  <!-- iOS 风格预约页面 -->
+  <div class="device device-ios">
+    <div class="device-notch"></div>
+    <div class="device-screen">
+      <div class="ios-container">
+        <header class="ios-header">
+          <div class="back-button" id="back-button">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <h1 class="ios-title">预约康复治疗</h1>
+        </header>
+        
+        <form class="booking-form" id="booking-form">
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">选择康复项目</h3>
+            <div class="flex gap-10" style="overflow-x: auto; padding-bottom: 8px;">
+              <div class="rehab-item selected" style="min-width: 140px; background-color: #F8F8F8; border-radius: 12px; padding: 16px; text-align: center; border: 2px solid var(--ios-primary);">
+                <i class="fas fa-walking" style="font-size: 32px; color: var(--ios-primary); margin-bottom: 8px;"></i>
+                <div style="font-weight: 600;">运动康复</div>
+              </div>
+              <div class="rehab-item" style="min-width: 140px; background-color: #F8F8F8; border-radius: 12px; padding: 16px; text-align: center; border: 2px solid transparent;">
+                <i class="fas fa-spine" style="font-size: 32px; color: var(--ios-primary); margin-bottom: 8px;"></i>
+                <div style="font-weight: 600;">脊柱康复</div>
+              </div>
+              <div class="rehab-item" style="min-width: 140px; background-color: #F8F8F8; border-radius: 12px; padding: 16px; text-align: center; border: 2px solid transparent;">
+                <i class="fas fa-hand-holding-medical" style="font-size: 32px; color: var(--ios-primary); margin-bottom: 8px;"></i>
+                <div style="font-weight: 600;">手部康复</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">选择治疗师</h3>
+            <div class="flex gap-10 mb-16" style="overflow-x: auto; padding-bottom: 8px;">
+              <div class="therapist-card selected" style="min-width: 120px; text-align: center; border: 2px solid transparent; padding: 8px; border-radius: 12px;">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="张医生" class="avatar avatar-large" style="margin: 0 auto 8px;">
+                <div style="font-weight: 600;">张医生</div>
+                <div style="color: var(--ios-text-secondary); font-size: 12px;">颈椎专家</div>
+                <div style="color: var(--ios-primary); margin-top: 4px;">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                </div>
+              </div>
+              <div class="therapist-card" style="min-width: 120px; text-align: center; border: 2px solid transparent; padding: 8px; border-radius: 12px;">
+                <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="王医生" class="avatar avatar-large" style="margin: 0 auto 8px;">
+                <div style="font-weight: 600;">王医生</div>
+                <div style="color: var(--ios-text-secondary); font-size: 12px;">运动康复</div>
+                <div style="color: var(--ios-primary); margin-top: 4px;">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+              </div>
+              <div class="therapist-card" style="min-width: 120px; text-align: center; border: 2px solid transparent; padding: 8px; border-radius: 12px;">
+                <img src="https://randomuser.me/api/portraits/women/63.jpg" alt="刘医生" class="avatar avatar-large" style="margin: 0 auto 8px;">
+                <div style="font-weight: 600;">刘医生</div>
+                <div style="color: var(--ios-text-secondary); font-size: 12px;">肩部康复</div>
+                <div style="color: var(--ios-primary); margin-top: 4px;">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">选择日期</h3>
+            <label class="ios-label">预约日期</label>
+            <input type="date" class="ios-input" id="booking-date" required min="2023-06-15" value="2023-06-18">
+            
+            <h3 style="font-size: 17px; font-weight: 600; margin: 20px 0 16px;">选择时间段</h3>
+            <div class="time-slots-group">
+              <div class="flex gap-10" style="overflow-x: auto; padding-bottom: 8px;">
+                <div class="time-slot selected" style="min-width: 80px; background-color: #F8F8F8; border-radius: 8px; padding: 12px; text-align: center; border: 2px solid transparent;">
+                  <div style="font-weight: 600;">09:00</div>
+                  <div style="font-size: 12px; color: var(--ios-text-secondary);">上午</div>
+                </div>
+                <div class="time-slot" style="min-width: 80px; background-color: #F8F8F8; border-radius: 8px; padding: 12px; text-align: center; border: 2px solid transparent;">
+                  <div style="font-weight: 600;">10:30</div>
+                  <div style="font-size: 12px; color: var(--ios-text-secondary);">上午</div>
+                </div>
+                <div class="time-slot disabled" style="min-width: 80px; background-color: #F8F8F8; border-radius: 8px; padding: 12px; text-align: center; border: 2px solid transparent;">
+                  <div style="font-weight: 600;">14:00</div>
+                  <div style="font-size: 12px; color: var(--ios-text-secondary);">下午</div>
+                  <div style="font-size: 10px; color: #FF3B30; margin-top: 4px;">已约满</div>
+                </div>
+                <div class="time-slot" style="min-width: 80px; background-color: #F8F8F8; border-radius: 8px; padding: 12px; text-align: center; border: 2px solid transparent;">
+                  <div style="font-weight: 600;">15:30</div>
+                  <div style="font-size: 12px; color: var(--ios-text-secondary);">下午</div>
+                </div>
+                <div class="time-slot" style="min-width: 80px; background-color: #F8F8F8; border-radius: 8px; padding: 12px; text-align: center; border: 2px solid transparent;">
+                  <div style="font-weight: 600;">17:00</div>
+                  <div style="font-size: 12px; color: var(--ios-text-secondary);">下午</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">备注信息</h3>
+            <label class="ios-label">症状描述（选填）</label>
+            <textarea class="ios-input" style="height: 100px; resize: none;" placeholder="请简要描述您的症状、疼痛部位、持续时间、严重程度，以及是否有特殊需求..."></textarea>
+          </div>
+          
+          <div class="ios-card">
+            <button type="submit" class="ios-button" id="submit-button">确认预约</button>
+            <button type="button" class="ios-button-secondary mt-16" id="cancel-button">取消</button>
+          </div>
+        </form>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="ios-tab-bar">
+          <div class="ios-tab">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+          </div>
+          <div class="ios-tab active">
+            <i class="far fa-calendar-alt"></i>
+            <span>预约</span>
+          </div>
+          <div class="ios-tab">
+            <i class="fas fa-clipboard-list"></i>
+            <span>记录</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-user"></i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 预约成功弹窗 -->
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal-content">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">预约成功</h3>
+      <p style="color: #666; margin-bottom: 16px;">您已成功预约张医生的运动康复治疗</p>
+      <p style="font-weight: 600; margin-bottom: 24px;">
+        <i class="far fa-calendar-alt" style="color: var(--ios-primary);"></i> 
+        2023年6月18日 上午9:00
+      </p>
+      <button class="ios-button" id="confirm-button">确定</button>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const tabs = document.querySelectorAll('.ios-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 康复项目选择
+    const rehabItems = document.querySelectorAll('.rehab-item');
+    rehabItems.forEach(item => {
+      item.addEventListener('click', function() {
+        rehabItems.forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+    
+    // 治疗师选择
+    const therapistCards = document.querySelectorAll('.therapist-card');
+    therapistCards.forEach(card => {
+      card.addEventListener('click', function() {
+        therapistCards.forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+    
+    // 时间段选择
+    const timeSlots = document.querySelectorAll('.time-slot:not(.disabled)');
+    timeSlots.forEach(slot => {
+      slot.addEventListener('click', function() {
+        timeSlots.forEach(s => s.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+    
+    // 日期变更时更新可用时间段
+    document.getElementById('booking-date').addEventListener('change', function(e) {
+      const date = new Date(e.target.value);
+      const dayOfWeek = date.getDay();
+      
+      // 模拟周末和特定日期的时间段可用性
+      const timeSlots = document.querySelectorAll('.time-slot');
+      
+      // 重置所有时间段
+      timeSlots.forEach(slot => {
+        slot.classList.remove('disabled');
+        const timeText = slot.querySelector('div:first-child').textContent;
+        
+        // 模拟一些时间段已约满
+        if (dayOfWeek === 6 || dayOfWeek === 0) { // 周末
+          if (timeText === '09:00' || timeText === '17:00') {
+            slot.classList.add('disabled');
+            if (!slot.querySelector('div:last-child').classList.contains('ios-text-secondary')) {
+              slot.querySelector('div:last-child').insertAdjacentHTML('afterend', '<div style="font-size: 10px; color: #FF3B30; margin-top: 4px;">周末不可约</div>');
+            }
+          }
+        } else {
+          // 随机设置一些时间段已约满
+          if (Math.random() > 0.7) {
+            slot.classList.add('disabled');
+            if (!slot.querySelector('div:last-child').classList.contains('ios-text-secondary')) {
+              slot.querySelector('div:last-child').insertAdjacentHTML('afterend', '<div style="font-size: 10px; color: #FF3B30; margin-top: 4px;">已约满</div>');
+            }
+          }
+        }
+      });
+      
+      // 确保至少有一个时间段可选
+      let availableSlots = document.querySelectorAll('.time-slot:not(.disabled)');
+      if (availableSlots.length === 0) {
+        timeSlots[0].classList.remove('disabled');
+        if (timeSlots[0].querySelector('div:last-child:not(.ios-text-secondary)')) {
+          timeSlots[0].querySelector('div:last-child:not(.ios-text-secondary)').remove();
+        }
+      }
+      
+      // 选中第一个可用时间段
+      availableSlots = document.querySelectorAll('.time-slot:not(.disabled)');
+      timeSlots.forEach(s => s.classList.remove('selected'));
+      availableSlots[0].classList.add('selected');
+    });
+    
+    // 表单提交处理
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // 获取表单数据
+      const rehabType = document.querySelector('.rehab-item.selected').textContent.trim();
+      const therapist = document.querySelector('.therapist-card.selected').querySelector('div:first-child').textContent;
+      const date = document.getElementById('booking-date').value;
+      const time = document.querySelector('.time-slot.selected').querySelector('div:first-child').textContent;
+      
+      // 显示加载状态
+      const submitButton = document.getElementById('submit-button');
+      submitButton.classList.add('loading');
+      submitButton.textContent = '处理中...';
+      
+      // 模拟网络请求延迟
+      setTimeout(() => {
+        // 隐藏加载状态
+        submitButton.classList.remove('loading');
+        submitButton.textContent = '确认预约';
+        
+        // 显示成功弹窗
+        document.getElementById('success-modal').classList.add('active');
+      }, 1500);
+    });
+    
+    // 弹窗确认按钮
+    document.getElementById('confirm-button').addEventListener('click', function() {
+      document.getElementById('success-modal').classList.remove('active');
+      // 可以在这里添加跳转到首页或预约详情页的逻辑
+    });
+    
+    // 取消按钮
+    document.getElementById('cancel-button').addEventListener('click', function() {
+      window.history.back();
+    });
+  </script>
+</body>
+</html> 

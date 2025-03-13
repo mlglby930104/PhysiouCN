@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物理治疗预约系统 - 就诊后反馈</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+  <style>
+    /* iOS特定样式 */
+    .back-button {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .ios-tab {
+      transition: all 0.2s;
+    }
+    
+    .ios-tab:active {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+    
+    .ios-button {
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .ios-button:active::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.1);
+    }
+    
+    /* 就诊后反馈页面特定样式 */
+    .rating-container {
+      margin: 16px 0;
+    }
+    
+    .rating-stars {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+    }
+    
+    .rating-star {
+      font-size: 32px;
+      color: #D1D1D6;
+      cursor: pointer;
+    }
+    
+    .rating-star.active {
+      color: #FF9500;
+    }
+    
+    .rating-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #8E8E93;
+    }
+    
+    .satisfaction-item {
+      margin-bottom: 16px;
+    }
+    
+    .satisfaction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .satisfaction-title {
+      font-weight: 600;
+    }
+    
+    .satisfaction-score {
+      font-weight: 600;
+      color: var(--ios-primary);
+    }
+    
+    .satisfaction-bar {
+      height: 6px;
+      background-color: #E5E5EA;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .satisfaction-progress {
+      height: 100%;
+      background-color: var(--ios-primary);
+    }
+    
+    .emoji-feedback {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    
+    .emoji-item {
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .emoji-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+      transition: all 0.2s ease;
+    }
+    
+    .emoji-item.selected .emoji-icon {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+    
+    .emoji-label {
+      font-size: 12px;
+      color: #8E8E93;
+    }
+    
+    .emoji-item.selected .emoji-label {
+      font-weight: 600;
+      color: var(--ios-text-primary);
+    }
+    
+    .feedback-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    
+    .feedback-tag {
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      cursor: pointer;
+      background-color: #F2F2F7;
+      color: var(--ios-text-primary);
+    }
+    
+    .feedback-tag.selected {
+      background-color: var(--ios-primary);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- iOS 风格就诊后反馈页面 -->
+  <div class="device device-ios">
+    <div class="device-notch"></div>
+    <div class="device-screen">
+      <div class="ios-container">
+        <header class="ios-header">
+          <div class="back-button" id="back-button">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <h1 class="ios-title">就诊后反馈</h1>
+        </header>
+        
+        <div class="ios-card">
+          <div class="flex justify-between align-center">
+            <div>
+              <h2 style="font-size: 18px; font-weight: 600;">腰椎康复治疗</h2>
+              <p style="color: var(--ios-text-secondary); margin-top: 4px;">2023年6月12日 下午2:30</p>
+            </div>
+            <div style="background-color: #E5F9E0; color: #4CD964; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+              已完成
+            </div>
+          </div>
+          
+          <div class="flex align-center mt-16">
+            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="医生头像" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px;">
+            <div>
+              <div style="font-weight: 600;">李医生</div>
+              <div style="font-size: 12px; color: var(--ios-text-secondary);">主治医师 | 脊柱康复专家</div>
+            </div>
+          </div>
+        </div>
+        
+        <form>
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">总体评价</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px;">请为本次治疗体验评分</p>
+            
+            <div class="rating-container">
+              <div class="rating-stars">
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star"></i>
+              </div>
+              <div class="rating-labels">
+                <span>非常不满意</span>
+                <span>非常满意</span>
+              </div>
+            </div>
+            
+            <div class="emoji-feedback">
+              <div class="emoji-item">
+                <div class="emoji-icon">😞</div>
+                <div class="emoji-label">失望</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-icon">😐</div>
+                <div class="emoji-label">一般</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-icon">🙂</div>
+                <div class="emoji-label">满意</div>
+              </div>
+              <div class="emoji-item selected">
+                <div class="emoji-icon">😊</div>
+                <div class="emoji-label">很满意</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-icon">🤩</div>
+                <div class="emoji-label">非常满意</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">满意度评价</h3>
+            
+            <div class="satisfaction-item">
+              <div class="satisfaction-header">
+                <span class="satisfaction-title">治疗效果</span>
+                <span class="satisfaction-score">4.5/5</span>
+              </div>
+              <div class="satisfaction-bar">
+                <div class="satisfaction-progress" style="width: 90%;"></div>
+              </div>
+            </div>
+            
+            <div class="satisfaction-item">
+              <div class="satisfaction-header">
+                <span class="satisfaction-title">医生专业度</span>
+                <span class="satisfaction-score">5/5</span>
+              </div>
+              <div class="satisfaction-bar">
+                <div class="satisfaction-progress" style="width: 100%;"></div>
+              </div>
+            </div>
+            
+            <div class="satisfaction-item">
+              <div class="satisfaction-header">
+                <span class="satisfaction-title">服务态度</span>
+                <span class="satisfaction-score">4.8/5</span>
+              </div>
+              <div class="satisfaction-bar">
+                <div class="satisfaction-progress" style="width: 96%;"></div>
+              </div>
+            </div>
+            
+            <div class="satisfaction-item">
+              <div class="satisfaction-header">
+                <span class="satisfaction-title">环境舒适度</span>
+                <span class="satisfaction-score">4/5</span>
+              </div>
+              <div class="satisfaction-bar">
+                <div class="satisfaction-progress" style="width: 80%;"></div>
+              </div>
+            </div>
+            
+            <div class="satisfaction-item">
+              <div class="satisfaction-header">
+                <span class="satisfaction-title">预约便捷度</span>
+                <span class="satisfaction-score">4.2/5</span>
+              </div>
+              <div class="satisfaction-bar">
+                <div class="satisfaction-progress" style="width: 84%;"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">标签评价</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px;">选择适合本次治疗体验的标签（可多选）</p>
+            
+            <div class="feedback-tags">
+              <div class="feedback-tag selected">专业</div>
+              <div class="feedback-tag selected">耐心</div>
+              <div class="feedback-tag selected">效果好</div>
+              <div class="feedback-tag">解释清晰</div>
+              <div class="feedback-tag">环境舒适</div>
+              <div class="feedback-tag">设备先进</div>
+              <div class="feedback-tag">服务周到</div>
+              <div class="feedback-tag">价格合理</div>
+              <div class="feedback-tag">等待时间短</div>
+              <div class="feedback-tag">交通便利</div>
+            </div>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">治疗效果反馈</h3>
+            <p style="color: var(--ios-text-secondary); font-size: 14px;">请描述本次治疗后的感受和效果</p>
+            
+            <label class="ios-label">疼痛改善程度</label>
+            <div class="rating-container">
+              <div class="rating-stars">
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star"></i>
+              </div>
+            </div>
+            
+            <label class="ios-label mt-16">功能改善程度</label>
+            <div class="rating-container">
+              <div class="rating-stars">
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star active"></i>
+                <i class="fas fa-star rating-star"></i>
+                <i class="fas fa-star rating-star"></i>
+              </div>
+            </div>
+            
+            <label class="ios-label mt-16">详细描述</label>
+            <textarea class="ios-input" style="height: 100px; resize: none;" placeholder="请描述治疗后的感受，包括疼痛、活动度、日常功能等方面的变化..."></textarea>
+          </div>
+          
+          <div class="ios-card">
+            <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 16px;">建议与改进</h3>
+            <textarea class="ios-input" style="height: 100px; resize: none;" placeholder="请提出您对我们服务的建议和改进意见..."></textarea>
+          </div>
+          
+          <div class="ios-card">
+            <button type="submit" class="ios-button">提交反馈</button>
+            <button type="button" class="ios-button-secondary mt-16">保存草稿</button>
+          </div>
+        </form>
+        
+        <div style="height: 80px;"></div>
+        
+        <div class="ios-tab-bar">
+          <div class="ios-tab">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-calendar-alt"></i>
+            <span>预约</span>
+          </div>
+          <div class="ios-tab active">
+            <i class="fas fa-clipboard-list"></i>
+            <span>记录</span>
+          </div>
+          <div class="ios-tab">
+            <i class="far fa-user"></i>
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../../js/main.js"></script>
+  <script>
+    // 返回按钮功能
+    document.getElementById('back-button').addEventListener('click', function() {
+      window.history.back();
+    });
+    
+    // 导航栏交互增强
+    const tabs = document.querySelectorAll('.ios-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 星级评分交互
+    const ratingStars = document.querySelectorAll('.rating-stars');
+    ratingStars.forEach(container => {
+      const stars = container.querySelectorAll('.rating-star');
+      stars.forEach((star, index) => {
+        star.addEventListener('click', function() {
+          stars.forEach((s, i) => {
+            if (i <= index) {
+              s.classList.add('active');
+            } else {
+              s.classList.remove('active');
+            }
+          });
+        });
+      });
+    });
+    
+    // 表情反馈交互
+    const emojiItems = document.querySelectorAll('.emoji-item');
+    emojiItems.forEach(item => {
+      item.addEventListener('click', function() {
+        emojiItems.forEach(i => i.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+    
+    // 标签选择交互
+    const feedbackTags = document.querySelectorAll('.feedback-tag');
+    feedbackTags.forEach(tag => {
+      tag.addEventListener('click', function() {
+        this.classList.toggle('selected');
+      });
+    });
+    
+    // 表单提交
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // 收集表单数据
+      const formData = {
+        overallRating: document.querySelectorAll('.rating-stars')[0].querySelectorAll('.rating-star.active').length,
+        emojiRating: document.querySelector('.emoji-item.selected .emoji-label').textContent,
+        painImprovement: document.querySelectorAll('.rating-stars')[1].querySelectorAll('.rating-star.active').length,
+        functionImprovement: document.querySelectorAll('.rating-stars')[2].querySelectorAll('.rating-star.active').length,
+        detailedFeedback: document.querySelectorAll('textarea')[0].value,
+        suggestions: document.querySelectorAll('textarea')[1].value,
+        selectedTags: Array.from(document.querySelectorAll('.feedback-tag.selected')).map(tag => tag.textContent)
+      };
+      
+      console.log('提交的反馈数据:', formData);
+      
+      // 这里可以添加提交数据到服务器的逻辑
+      alert('感谢您的反馈！');
+      
+      // 提交成功后可以跳转到其他页面
+      // window.location.href = 'treatment-history-ios.html';
+    });
+    
+    // 保存草稿按钮
+    document.querySelector('.ios-button-secondary').addEventListener('click', function() {
+      alert('反馈已保存为草稿');
+      // 这里可以添加保存草稿的逻辑
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>内容加载测试</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #007AFF;
+      text-align: center;
+      margin-top: 0;
+    }
+    
+    .content-container {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      min-height: 300px;
+      overflow: hidden;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    button {
+      background-color: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      flex: 1;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background-color: #0056b3;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;
+    }
+    
+    .loading::after {
+      content: "加载中...";
+      color: #666;
+      font-size: 16px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    .error-message {
+      padding: 20px;
+      color: #d32f2f;
+      text-align: center;
+      background-color: #ffebee;
+      border-radius: 8px;
+      margin: 20px;
+      border: 1px solid #ef9a9a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>内容加载测试</h1>
+      <p>此页面用于测试内容加载功能是否正常工作。点击下面的按钮加载不同的内容。</p>
+      
+      <div class="button-group">
+        <button onclick="loadContent('content-area', 'test.html')">加载测试页面</button>
+        <button onclick="loadContent('content-area', 'screens/ios/home-ios.html')">加载iOS首页</button>
+        <button onclick="loadContent('content-area', 'screens/android/home-android.html')">加载Android首页</button>
+        <button onclick="loadContent('content-area', 'non-existent-file.html')">加载不存在的文件</button>
+      </div>
+      
+      <div class="content-container">
+        <div id="content-area">
+          <div style="padding: 20px; text-align: center;">
+            <p>点击上方按钮加载内容</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadContent(containerId, src) {
+      const container = document.getElementById(containerId);
+      
+      // 显示加载状态
+      container.innerHTML = '<div class="loading"></div>';
+      
+      fetch(src)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP错误! 状态码: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(html => {
+          try {
+            // 提取body内容
+            const bodyContent = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+            if (bodyContent && bodyContent[1]) {
+              container.innerHTML = bodyContent[1];
+            } else {
+              container.innerHTML = html; // 如果无法提取body，则使用整个HTML
+            }
+            
+            // 执行新加载内容中的脚本
+            const scripts = container.querySelectorAll('script');
+            scripts.forEach(script => {
+              const newScript = document.createElement('script');
+              
+              if (script.src) {
+                newScript.src = script.src;
+              } else {
+                newScript.textContent = script.textContent;
+              }
+              
+              document.head.appendChild(newScript);
+              document.head.removeChild(newScript);
+            });
+          } catch (error) {
+            container.innerHTML = `<div class="error-message">解析内容失败: ${error.message}</div>`;
+          }
+        })
+        .catch(error => {
+          container.innerHTML = `<div class="error-message">
+            <p>加载内容失败: ${error.message}</p>
+            <p>请求的文件: ${src}</p>
+          </div>`;
+        });
+    }
+  </script>
+</body>
+</html> 
